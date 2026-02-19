@@ -472,6 +472,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Handle sharing an activity
+  function handleShare(event, activityName, details) {
+    const button = event.currentTarget;
+    const shareUrl = new URL(window.location.href);
+    shareUrl.search = "";
+    shareUrl.searchParams.set("activity", activityName);
+    const url = shareUrl.toString();
+    const title = `${activityName} - Mergington High School`;
+    const text = details.description;
+
+    if (navigator.share) {
+      navigator.share({ title, text, url }).catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Share failed:", err);
+        }
+      });
+      return;
+    }
+
+    // Fallback: toggle a share dropdown
+    const existing = document.querySelector(".share-dropdown");
+    if (existing) {
+      existing.remove();
+      return;
+    }
+
+    const dropdown = document.createElement("div");
+    dropdown.className = "share-dropdown";
+    dropdown.innerHTML = `
+      <button class="share-option copy-link-btn">📋 Copy Link</button>
+      <a class="share-option" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">🐦 Share on X</a>
+      <a class="share-option" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener noreferrer">📘 Share on Facebook</a>
+    `;
+    document.body.appendChild(dropdown);
+
+    // Position dropdown above the button
+    const rect = button.getBoundingClientRect();
+    dropdown.style.top = `${rect.top + window.scrollY - dropdown.offsetHeight - 8}px`;
+    dropdown.style.left = `${rect.left + window.scrollX}px`;
+
+    dropdown.querySelector(".copy-link-btn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        showMessage("Link copied to clipboard!", "success");
+      } catch {
+        showMessage("Copy this link: " + url, "info");
+      }
+      dropdown.remove();
+    });
+
+    function closeDropdown(e) {
+      if (!dropdown.contains(e.target) && e.target !== button) {
+        dropdown.remove();
+        document.removeEventListener("click", closeDropdown);
+      }
+    }
+    setTimeout(() => document.addEventListener("click", closeDropdown), 0);
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -553,6 +612,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </ul>
       </div>
       <div class="activity-card-actions">
+        <button class="share-button" title="Share this activity">📤 Share</button>
         ${
           currentUser
             ? `
@@ -570,6 +630,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       </div>
     `;
+
+    // Add click handler for share button
+    const shareBtn = activityCard.querySelector(".share-button");
+    shareBtn.addEventListener("click", (event) => handleShare(event, name, details));
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
