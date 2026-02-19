@@ -187,7 +187,9 @@ section h3 {
   margin-top: auto;
   padding-top: 10px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Activity Tag */
@@ -273,7 +275,7 @@ section h3 {
   color: var(--secondary-text);
   margin-top: 10px;
   padding: 6px 12px;
-  width: 100%;
+  flex: 1;
   font-weight: bold;
   border-radius: 20px;
   box-shadow: 0 2px 4px rgba(255, 111, 0, 0.2);
@@ -659,6 +661,59 @@ footer {
   background-color: rgba(255, 255, 255, 0.2);
   font-size: 0.8rem;
   border-radius: 20px;
+}
+
+/* Share button and dropdown */
+.share-button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  background-color: var(--background);
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+
+.share-dropdown {
+  position: absolute;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1100;
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.share-option {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color 0.2s;
+  border-radius: 0;
+}
+
+.share-option:last-child {
+  border-bottom: none;
+}
+
+.share-option:hover {
+  background-color: var(--background);
 }
 
 #logout-button:hover {
